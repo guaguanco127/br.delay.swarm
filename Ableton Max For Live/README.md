@@ -7,7 +7,8 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.spacedelay.1.0, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
+Repository for br.spacedelay, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
+The Max for Live device is unchanged in br.spacedelay 1.1 (only the Max/MSP abstraction changed), so it is still version 1.0.  
 Additional programs can be found here: [https://github.com/guaguanco127/plugins](https://github.com/guaguanco127/plugins)
 
 These files were created with Max 9. 

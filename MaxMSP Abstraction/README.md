@@ -1,5 +1,5 @@
 # Max/MSP Abstraction:   
-## br.spacedelay.1.0
+## br.spacedelay.1.1
 
 
 
@@ -8,10 +8,10 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.spacedelay.1.0, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
+Repository for br.spacedelay.1.1, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
 Additional programs can be found here: [https://github.com/guaguanco127/plugins](https://github.com/guaguanco127/plugins)
 
-These files were created with Max 9. 
+These files were created with Max 9. Version 1.1 replaced the control-message inlet with one inlet per control. 
 
 ## Table of Contents 
 
@@ -76,42 +76,49 @@ By saving your logic in an abstraction, you can create modules that can be used 
 
 1. Make sure you have Max 9 installed in your computer. And, make sure you are using a Max patch that is inside of a folder.  
 
-2. Copy and paste br.spacedelay.abs.1.0.maxpat inside of the same folder as the Max patch you are using. 
+2. Copy and paste br.spacedelay.abs.1.1.maxpat inside of the same folder as the Max patch you are using. 
 
-3. Also, copy and paste the file called br.spacedelay.abs.poly.1.0.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
+3. Also, copy and paste the file called br.spacedelay.abs.poly.1.1.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
 
-4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.spacedelay.abs.1.0.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
+4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.spacedelay.abs.1.1.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
 
-5. Alternatively, create an object called br.spacedelay.abs.1.0 (for example: [br.spacedelay.abs.1.0], do not include brackets) and control it with messages into its 3rd inlet (see below).
+5. Alternatively, create an object called br.spacedelay.abs.1.1 (for example: [br.spacedelay.abs.1.1], do not include brackets) and control it through its inlets (see below).
 
 ## <a name="Use"></a>How To Use
 
 The first two inlets are for the left and the right stereo signals. The two outlets are the left and right outputs.
 
-The 3rd inlet takes control messages: a parameter name followed by a value, for example [delay1 500( or [freeze 1(. These go straight to the processing (they don't move the on-screen controls). The names are:
+Every control has its own inlet, in the same order as the controls. Sending a value to an inlet moves its on-screen control too, so the display always matches the sound. Hover over an inlet in Max to see its range and default.
 
-| Message | Parameter | Range |
-|---|---|---|
-| voices | Voices | 1 - 12 |
-| drywet | Dry/Wet | 0 - 100 |
-| delay1 / delay2 | Delay 1 / Delay 2 | 0 - 10000 ms |
-| repeats | Repeats | 1 - 4 |
-| xfade | Crossfade | 15 - 2000 ms |
-| feedback | Feedback | 0 - 0.95 |
-| freeze | Freeze | 0 = live, 1 = frozen |
-| f_rate1 / f_rate2 | Filter Rate 1 / Rate 2 | 0.001 - 20 Hz |
-| f_lo / f_hi | Filter Freq A / Freq B | 20 - 20000 Hz |
-| f_reso | Filter Reso | 0 - 1 |
-| f_type | Filter LP / BP | 0 = lowpass, 1 = bandpass |
-| f_shape | Filter Shape | 0 - 6 |
-| f_bypass | Filter Bypass | 0 = active, 1 = bypassed |
-| a_rate1 / a_rate2 | Amp Rate 1 / Rate 2 | 0.001 - 20 Hz |
-| a_depth | Amp Depth | 0 - 1 |
-| a_shape | Amp Shape | 0 - 6 |
-| a_bypass | Amp Bypass | 0 = active, 1 = bypassed |
-| p_rate1 / p_rate2 | Pan Rate 1 / Rate 2 | 0.001 - 20 Hz |
-| p_range | Pan Range | 0 - 1 |
-| p_shape | Pan Shape | 0 - 6 |
-| p_bypass | Pan Bypass | 0 = active, 1 = bypassed |
+| Inlet | Control | Type | Range | Default |
+|---|---|---|---|---|
+| 3 | Voices | Int | 1 - 12 | 4 |
+| 4 | Dry/Wet | Float | 0 - 100 % | 100 |
+| 5 | Delay 1 | Float | 0 - 10000 ms | 1000 |
+| 6 | Delay 2 | Float | 0 - 10000 ms | 5000 |
+| 7 | Repeats | Float | 1 - 4 | 2 |
+| 8 | Crossfade | Float | 15 - 2000 ms | 1000 |
+| 9 | Feedback | Float | 0 - 0.95 | 0 |
+| 10 | Freeze | Int | 0 = Live, 1 = Frozen | 0 |
+| 11 | Filter Rate 1 | Float | 0.001 - 20 Hz | 0.05 |
+| 12 | Filter Rate 2 | Float | 0.001 - 20 Hz | 0.5 |
+| 13 | Cutoff A | Float | 20 - 20000 Hz | 300 |
+| 14 | Cutoff B | Float | 20 - 20000 Hz | 4000 |
+| 15 | Resonance | Float | 0 - 1 | 0.3 |
+| 16 | Filter Type | Int | 0 = LP, 1 = BP | 0 |
+| 17 | Filter LFO Shape | Int | 0 = Sine, 1 = Saw Up, 2 = Tri, 3 = Saw Down, 4 = Square, 5 = S&H, 6 = Curved Random | 0 |
+| 18 | Filter Bypass | Int | 0 = Active, 1 = Bypassed | 0 |
+| 19 | Amp Rate 1 | Float | 0.001 - 20 Hz | 0.05 |
+| 20 | Amp Rate 2 | Float | 0.001 - 20 Hz | 0.5 |
+| 21 | Amp Depth | Float | 0 - 1 | 0.7 |
+| 22 | Amp Bypass | Int | 0 = Active, 1 = Bypassed | 0 |
+| 23 | Amp LFO Shape | Int | 0 = Sine, 1 = Saw Up, 2 = Tri, 3 = Saw Down, 4 = Square, 5 = S&H, 6 = Curved Random | 0 |
+| 24 | Pan Rate 1 | Float | 0.001 - 20 Hz | 0.05 |
+| 25 | Pan Rate 2 | Float | 0.001 - 20 Hz | 0.5 |
+| 26 | Pan Range | Float | 0 - 1 | 0.5 |
+| 27 | Pan Bypass | Int | 0 = Active, 1 = Bypassed | 0 |
+| 28 | Pan LFO Shape | Int | 0 = Sine, 1 = Saw Up, 2 = Tri, 3 = Saw Down, 4 = Square, 5 = S&H, 6 = Curved Random | 0 |
 
 Shapes: 0 = Sine, 1 = Saw Up, 2 = Tri, 3 = Saw Down, 4 = Square, 5 = S&H, 6 = Curved Random.
+
+**Upgrading from 1.0:** the 3rd-inlet control messages (for example [delay1 500() were replaced by one inlet per control. Reconnect each message to its inlet from the table above, sending just the number.
