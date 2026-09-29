@@ -25,7 +25,7 @@ These files were created with Max 9.
 ## What's New in 1.1
 
 - **One inlet per control (Max/MSP abstraction).** The abstraction's 3rd-inlet control messages were replaced by 26 inlets, one for each control, in the same order as the controls. Sending a value moves the on-screen control too, so the display always matches the sound. Hover over an inlet to see its range and default.
-- The Max for Live device is unchanged.
+- The Max for Live device is renumbered 1.1 so both versions share one number; it sounds and works exactly like 1.0.
 
 ## <a name="About"></a>About
 
