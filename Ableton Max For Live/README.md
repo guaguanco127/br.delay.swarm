@@ -9,7 +9,7 @@ By Brian Riordan
   
 Repository for br.spacedelay, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
 The Max for Live device is numbered 1.1 to match the abstraction. It sounds and works exactly like 1.0 (1.1 only added control inlets to the Max/MSP abstraction). If you have 1.0 installed, replace both files.  
-Additional programs can be found here: [https://github.com/guaguanco127/plugins](https://github.com/guaguanco127/plugins)
+Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. 
 
