@@ -1,4 +1,4 @@
-# Ableton Max for Live device: br.spacedelay.1.1
+# Ableton Max for Live device: br.delay.swarm.1.2
 
 
 
@@ -7,8 +7,8 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.spacedelay, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
-The Max for Live device is numbered 1.1 to match the abstraction. It sounds and works exactly like 1.0 (1.1 only added control inlets to the Max/MSP abstraction). If you have 1.0 installed, replace both files.  
+Repository for br.delay.swarm, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
+Up to version 1.1 this device was called br.spacedelay. In 1.2 it was renamed br.delay.swarm; it sounds and works exactly like 1.1. To update, install both new files. Keep the old br.spacedelay files as well if any of your existing Live sets still use the old device; new sets should use br.delay.swarm.  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. 
@@ -21,7 +21,7 @@ These files were created with Max 9.
 
 ## <a name="About"></a>About
 
-This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a cloud of echoes that keeps rearranging itself around what you play.
+This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a swarm of echoes that keeps rearranging itself around what you play.
 
 ### Delay
 
@@ -73,12 +73,12 @@ Max For Live brings the power and flexibility of Max to Ableton Live. Max For Li
 2. For Macintosh:  
 Go to your user folder  
 Then Music > Ableton > User Library > Presets > Audio Effects > Max Audio Effect  
-Copy and paste br.spacedelay.1.1.amxd into that folder
+Copy and paste br.delay.swarm.1.2.amxd into that folder
 
 3. For Windows: \Users\[username]\Documents\Ableton\User Library\Presets\Audio Effects\Max Audio Effect  
 
-4. Also, copy and paste the file called br.spacedelay.poly.1.1.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The device will not work without this file.**    
+4. Also, copy and paste the file called br.delay.swarm.poly.1.2.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The device will not work without this file.**    
   
 5. Open Ableton Live. On the left-hand side, look for Max for Live > Max Audio Effect and then the name of this device.
 
-6. Either double-click on the device, or drag/drop it onto the track where you wish to use it. You can use several br.spacedelay devices in the same Live set -- each one has its own internal buffer. Every control, including Freeze, can be automated like any other parameter.
+6. Either double-click on the device, or drag/drop it onto the track where you wish to use it. You can use several br.delay.swarm devices in the same Live set -- each one has its own internal buffer. Every control, including Freeze, can be automated like any other parameter.

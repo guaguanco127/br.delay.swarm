@@ -1,5 +1,5 @@
 # Max/MSP Abstraction:   
-## br.spacedelay.1.1
+## br.delay.swarm.1.2
 
 
 
@@ -8,10 +8,10 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.spacedelay.1.1, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
+Repository for br.delay.swarm.1.2, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
-These files were created with Max 9. Version 1.1 replaced the control-message inlet with one inlet per control. 
+These files were created with Max 9. Version 1.1 replaced the control-message inlet with one inlet per control. Version 1.2 renamed the abstraction from br.spacedelay to br.delay.swarm -- nothing else changed; if you used 1.1, retype the object box as `br.delay.swarm.abs.1.2` (no rewiring needed). 
 
 ## Table of Contents 
 
@@ -24,7 +24,7 @@ These files were created with Max 9. Version 1.1 replaced the control-message in
 
 ## <a name="About"></a>About
 
-This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a cloud of echoes that keeps rearranging itself around what you play.
+This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a swarm of echoes that keeps rearranging itself around what you play.
 
 ### Delay
 
@@ -76,13 +76,13 @@ By saving your logic in an abstraction, you can create modules that can be used 
 
 1. Make sure you have Max 9 installed in your computer. And, make sure you are using a Max patch that is inside of a folder.  
 
-2. Copy and paste br.spacedelay.abs.1.1.maxpat inside of the same folder as the Max patch you are using. 
+2. Copy and paste br.delay.swarm.abs.1.2.maxpat inside of the same folder as the Max patch you are using. 
 
-3. Also, copy and paste the file called br.spacedelay.abs.poly.1.1.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
+3. Also, copy and paste the file called br.delay.swarm.abs.poly.1.2.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
 
-4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.spacedelay.abs.1.1.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
+4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.delay.swarm.abs.1.2.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
 
-5. Alternatively, create an object called br.spacedelay.abs.1.1 (for example: [br.spacedelay.abs.1.1], do not include brackets) and control it through its inlets (see below).
+5. Alternatively, create an object called br.delay.swarm.abs.1.2 (for example: [br.delay.swarm.abs.1.2], do not include brackets) and control it through its inlets (see below).
 
 ## <a name="Use"></a>How To Use
 

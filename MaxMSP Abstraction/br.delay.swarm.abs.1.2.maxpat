@@ -1,6 +1,6 @@
 {
 	"patcher": {
-"description" : "br.spacedelay.abs.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+"description" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 		"fileversion": 1,
 		"appversion": {
 			"major": 9,
@@ -18,7 +18,7 @@
 		],
 		"openinpresentation": 1,
 		"boxes": [
-{"box": {"id": "obj-signature", "maxclass": "comment", "numinlets": 1, "numoutlets": 0, "patching_rect": [240.0, 0.0, 520.0, 40.0], "text": "br.spacedelay.abs.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/", "linecount": 2}},
+{"box": {"id": "obj-signature", "maxclass": "comment", "numinlets": 1, "numoutlets": 0, "patching_rect": [240.0, 0.0, 520.0, 40.0], "text": "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/", "linecount": 2}},
 
 			{
 				"box": {
@@ -569,7 +569,7 @@
 							},
 							{
 								"box": {
-									"code": "// sd.recorder -- space-delay shared circular-buffer writer. Lives OUTSIDE the poly~\n// in1 / in2 = live input L / R\n// in3 / in4 = feedback return L / R: summed voices, via tapin~/tapout~ in the parent\n// out1 = write head: the sample index written this sample. Send into the poly~ so\n//        every voice reads relative to it.\n// Buffer spacebuf is a placeholder name: rebind at load with \"spacebuf <real name>\".\n// Feedback loop: DC block, gentle one-pole highpass, scaled by 1/sqrt(active voices), tanh soft clip.\n// Without the scaling, loop gain grows with voice count and the feedback runs away.\n// Freeze: the write head keeps moving, so voices keep reading and skipping, but writing stops,\n// so the last 12 s loop. Engage/release crossfades live input with the buffer's existing\n// contents over 50 ms, so the loop seam never clicks. Feedback doesn't write while frozen.\n\nParam feedback(0, min=0, max=0.95);\nParam fb_hp(30, min=5, max=500);\nParam nvoices(4, min=1, max=12);\nParam freeze(0, min=0, max=1);\n\nHistory whead(0);\nHistory fbs(0);\nHistory lpL(0);\nHistory lpR(0);\nHistory nsm(4);\nHistory fzmix(0);\n\nBuffer spacebuf;\n\n// read all state first\nidx = whead;\nfsm = fbs;\nlpl = lpL;\nlpr = lpR;\nns = nsm;\nfz = fzmix;\n\nlen = max(dim(spacebuf), 1);\n\n// feedback amount, one-pole smoothed over roughly 20 ms\nfsm = fsm + (feedback - fsm) * (1 - exp(-1 / mstosamps(20)));\n\n// active voice count, smoothed over roughly 300 ms so the loop gain never jumps\nns = ns + (clip(nvoices, 1, 12) - ns) * (1 - exp(-1 / mstosamps(300)));\nvnorm = 1 / sqrt(ns);\n\n// feedback loop processing\nhpcoef = 1 - exp(-twopi * fb_hp / samplerate);\nxl = dcblock(in3);\nxr = dcblock(in4);\nlpl = lpl + hpcoef * (xl - lpl);\nlpr = lpr + hpcoef * (xr - lpr);\nfl = tanh((xl - lpl) * vnorm);\nfr = tanh((xr - lpr) * vnorm);\n\n// freeze blend: 0 = live, 1 = frozen, 50 ms either way\nfz = clip(fz + ((freeze > 0.5) ? 1 : -1) / max(1, mstosamps(50)), 0, 1);\n\n// write input + feedback at the head; while fading, blend with what is already there;\n// fully frozen = no writes at all\nwl = 0;\nwr = 0;\nif (fz < 1) {\n    wl = in1 + fsm * fl;\n    wr = in2 + fsm * fr;\n    if (fz > 0) {\n        wl = wl + (peek(spacebuf, idx, 0) - wl) * fz;\n        wr = wr + (peek(spacebuf, idx, 1) - wr) * fz;\n    }\n    poke(spacebuf, wl, idx, 0);\n    poke(spacebuf, wr, idx, 1);\n}\n\n// write state last\nwhead = wrap(idx + 1, 0, len);\nfbs = fsm;\nlpL = lpl;\nlpR = lpr;\nnsm = ns;\nfzmix = fz;\n\nout1 = idx;\n",
+									"code": "// sd.recorder -- br.delay.swarm shared circular-buffer writer. Lives OUTSIDE the poly~\n// in1 / in2 = live input L / R\n// in3 / in4 = feedback return L / R: summed voices, via tapin~/tapout~ in the parent\n// out1 = write head: the sample index written this sample. Send into the poly~ so\n//        every voice reads relative to it.\n// Buffer spacebuf is a placeholder name: rebind at load with \"spacebuf <real name>\".\n// Feedback loop: DC block, gentle one-pole highpass, scaled by 1/sqrt(active voices), tanh soft clip.\n// Without the scaling, loop gain grows with voice count and the feedback runs away.\n// Freeze: the write head keeps moving, so voices keep reading and skipping, but writing stops,\n// so the last 12 s loop. Engage/release crossfades live input with the buffer's existing\n// contents over 50 ms, so the loop seam never clicks. Feedback doesn't write while frozen.\n\nParam feedback(0, min=0, max=0.95);\nParam fb_hp(30, min=5, max=500);\nParam nvoices(4, min=1, max=12);\nParam freeze(0, min=0, max=1);\n\nHistory whead(0);\nHistory fbs(0);\nHistory lpL(0);\nHistory lpR(0);\nHistory nsm(4);\nHistory fzmix(0);\n\nBuffer spacebuf;\n\n// read all state first\nidx = whead;\nfsm = fbs;\nlpl = lpL;\nlpr = lpR;\nns = nsm;\nfz = fzmix;\n\nlen = max(dim(spacebuf), 1);\n\n// feedback amount, one-pole smoothed over roughly 20 ms\nfsm = fsm + (feedback - fsm) * (1 - exp(-1 / mstosamps(20)));\n\n// active voice count, smoothed over roughly 300 ms so the loop gain never jumps\nns = ns + (clip(nvoices, 1, 12) - ns) * (1 - exp(-1 / mstosamps(300)));\nvnorm = 1 / sqrt(ns);\n\n// feedback loop processing\nhpcoef = 1 - exp(-twopi * fb_hp / samplerate);\nxl = dcblock(in3);\nxr = dcblock(in4);\nlpl = lpl + hpcoef * (xl - lpl);\nlpr = lpr + hpcoef * (xr - lpr);\nfl = tanh((xl - lpl) * vnorm);\nfr = tanh((xr - lpr) * vnorm);\n\n// freeze blend: 0 = live, 1 = frozen, 50 ms either way\nfz = clip(fz + ((freeze > 0.5) ? 1 : -1) / max(1, mstosamps(50)), 0, 1);\n\n// write input + feedback at the head; while fading, blend with what is already there;\n// fully frozen = no writes at all\nwl = 0;\nwr = 0;\nif (fz < 1) {\n    wl = in1 + fsm * fl;\n    wr = in2 + fsm * fr;\n    if (fz > 0) {\n        wl = wl + (peek(spacebuf, idx, 0) - wl) * fz;\n        wr = wr + (peek(spacebuf, idx, 1) - wr) * fz;\n    }\n    poke(spacebuf, wl, idx, 0);\n    poke(spacebuf, wr, idx, 1);\n}\n\n// write state last\nwhead = wrap(idx + 1, 0, len);\nfbs = fsm;\nlpL = lpl;\nlpR = lpr;\nnsm = ns;\nfzmix = fz;\n\nout1 = idx;\n",
 									"fontface": 0,
 									"fontname": "<Monospaced>",
 									"fontsize": 12.0,
@@ -719,7 +719,7 @@
 						200.0,
 						22.0
 					],
-					"text": "poly~ br.spacedelay.abs.poly.1.1 12"
+					"text": "poly~ br.delay.swarm.abs.poly.1.2 12"
 				}
 			},
 			{
@@ -1134,7 +1134,7 @@
 							},
 							{
 								"box": {
-									"code": "// sd.drywet -- equal-power dry/wet mix for the space-delay device\n// in1 / in2 = dry L / R (device inputs), in3 / in4 = wet L / R (poly~ voices)\n// out1 / out2 = mixed L / R\n// drywet Param 0..100: 0 = dry only, 100 = wet only. Equal-power because dry and delayed signals\n// are uncorrelated -- a linear fade would dip around the middle. Moves are rate-limited: a full\n// 0 to 100 sweep takes at least 20 ms, so the control can't click.\n\nParam drywet(100, min=0, max=100);\n\nHistory mixpos(1);\n\nmp = mixpos;\nmp = mp + clip(clip(drywet * 0.01, 0, 1) - mp, -1 / max(1, mstosamps(20)), 1 / max(1, mstosamps(20)));\ngdry = cos(mp * pi * 0.5);\ngwet = sin(mp * pi * 0.5);\nmixpos = mp;\n\nout1 = in1 * gdry + in3 * gwet;\nout2 = in2 * gdry + in4 * gwet;\n",
+									"code": "// sd.drywet -- equal-power dry/wet mix for the br.delay.swarm device\n// in1 / in2 = dry L / R (device inputs), in3 / in4 = wet L / R (poly~ voices)\n// out1 / out2 = mixed L / R\n// drywet Param 0..100: 0 = dry only, 100 = wet only. Equal-power because dry and delayed signals\n// are uncorrelated -- a linear fade would dip around the middle. Moves are rate-limited: a full\n// 0 to 100 sweep takes at least 20 ms, so the control can't click.\n\nParam drywet(100, min=0, max=100);\n\nHistory mixpos(1);\n\nmp = mixpos;\nmp = mp + clip(clip(drywet * 0.01, 0, 1) - mp, -1 / max(1, mstosamps(20)), 1 / max(1, mstosamps(20)));\ngdry = cos(mp * pi * 0.5);\ngwet = sin(mp * pi * 0.5);\nmixpos = mp;\n\nout1 = in1 * gdry + in3 * gwet;\nout2 = in2 * gdry + in4 * gwet;\n",
 									"fontface": 0,
 									"fontname": "<Monospaced>",
 									"fontsize": 12.0,
@@ -3604,7 +3604,7 @@
 						0.0,
 						1.0
 					],
-					"id": "obj-103", "hint" : "br.spacedelay.abs.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/", "annotation" : "br.spacedelay.abs.1.1 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+					"id": "obj-103", "hint" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/", "annotation" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 					"maxclass": "panel",
 					"mode": 0,
 					"numinlets": 1,
