@@ -1,6 +1,6 @@
 # Max/MSP Patches, Abstractions, Externals, RNBO, VSTs, and Ableton Max for Live 
 
-## br.spacedelay.1.1
+## br.delay.swarm.1.2
 
 
 
@@ -9,18 +9,24 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.spacedelay.1.1, with all related files, can be found here: [https://github.com/guaguanco127/br.spacedelay](https://github.com/guaguanco127/br.spacedelay)  
+Repository for br.delay.swarm.1.2, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. 
 
 ## Links
 
+[What's New in 1.2](#whats-new-in-12)  
 [What's New in 1.1](#whats-new-in-11)  
 [About](#About)   
-[Ableton Max for Live Device](https://github.com/guaguanco127/br.spacedelay/tree/main/Ableton%20Max%20For%20Live) To use inside of Ableton Suite   
-[Max/MSP Abstraction](https://github.com/guaguanco127/br.spacedelay/tree/main/MaxMSP%20Abstraction) To use as an abstraction within Max/MSP   
+[Ableton Max for Live Device](https://github.com/guaguanco127/br.delay.swarm/tree/main/Ableton%20Max%20For%20Live) To use inside of Ableton Suite   
+[Max/MSP Abstraction](https://github.com/guaguanco127/br.delay.swarm/tree/main/MaxMSP%20Abstraction) To use as an abstraction within Max/MSP   
 
+
+## What's New in 1.2
+
+- **New name: br.delay.swarm (formerly br.spacedelay).** Up to version 1.1 this tool was called br.spacedelay. It was renamed so it sits with the other br.delay.* tools, and because "swarm" says what it does: a swarm of delay voices, each moving on its own. Nothing else changed -- it sounds and works exactly like 1.1.
+- **Updating from 1.1:** the file names changed, so replace the old files with the new ones. In a Max patch, retype the object as `br.delay.swarm.abs.1.2` (same inlets and outlets, nothing to rewire). In Ableton, load the new device in place of the old one. The old GitHub link (github.com/guaguanco127/br.spacedelay) redirects here.
 
 ## What's New in 1.1
 
@@ -29,7 +35,7 @@ These files were created with Max 9.
 
 ## <a name="About"></a>About
 
-This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a cloud of echoes that keeps rearranging itself around what you play.
+This is a patch//device built in Max/MSP for spacious, ever-changing delays on a stereo signal. Up to 12 delay voices read from one shared 12-second recording of the input. Every voice keeps jumping ("skipping") to a new random delay time within your chosen range, crossfading each jump so it never clicks, and each voice has its own filter, amplitude and panning movement at randomly chosen speeds. The result is a swarm of echoes that keeps rearranging itself around what you play.
 
 ### Delay
 
