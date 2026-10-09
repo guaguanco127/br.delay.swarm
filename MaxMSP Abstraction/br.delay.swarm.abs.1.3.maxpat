@@ -1,6 +1,6 @@
 {
 	"patcher": {
-"description" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+		"description": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 		"fileversion": 1,
 		"appversion": {
 			"major": 9,
@@ -18,8 +18,22 @@
 		],
 		"openinpresentation": 1,
 		"boxes": [
-{"box": {"id": "obj-signature", "maxclass": "comment", "numinlets": 1, "numoutlets": 0, "patching_rect": [240.0, 0.0, 520.0, 40.0], "text": "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/", "linecount": 2}},
-
+			{
+				"box": {
+					"id": "obj-signature",
+					"maxclass": "comment",
+					"numinlets": 1,
+					"numoutlets": 0,
+					"patching_rect": [
+						240.0,
+						0.0,
+						520.0,
+						40.0
+					],
+					"text": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/",
+					"linecount": 2
+				}
+			},
 			{
 				"box": {
 					"comment": "Audio In L",
@@ -569,7 +583,7 @@
 							},
 							{
 								"box": {
-									"code": "// sd.recorder -- br.delay.swarm shared circular-buffer writer. Lives OUTSIDE the poly~\n// in1 / in2 = live input L / R\n// in3 / in4 = feedback return L / R: summed voices, via tapin~/tapout~ in the parent\n// out1 = write head: the sample index written this sample. Send into the poly~ so\n//        every voice reads relative to it.\n// Buffer spacebuf is a placeholder name: rebind at load with \"spacebuf <real name>\".\n// Feedback loop: DC block, gentle one-pole highpass, scaled by 1/sqrt(active voices), tanh soft clip.\n// Without the scaling, loop gain grows with voice count and the feedback runs away.\n// Freeze: the write head keeps moving, so voices keep reading and skipping, but writing stops,\n// so the last 12 s loop. Engage/release crossfades live input with the buffer's existing\n// contents over 50 ms, so the loop seam never clicks. Feedback doesn't write while frozen.\n\nParam feedback(0, min=0, max=0.95);\nParam fb_hp(30, min=5, max=500);\nParam nvoices(4, min=1, max=12);\nParam freeze(0, min=0, max=1);\n\nHistory whead(0);\nHistory fbs(0);\nHistory lpL(0);\nHistory lpR(0);\nHistory nsm(4);\nHistory fzmix(0);\n\nBuffer spacebuf;\n\n// read all state first\nidx = whead;\nfsm = fbs;\nlpl = lpL;\nlpr = lpR;\nns = nsm;\nfz = fzmix;\n\nlen = max(dim(spacebuf), 1);\n\n// feedback amount, one-pole smoothed over roughly 20 ms\nfsm = fsm + (feedback - fsm) * (1 - exp(-1 / mstosamps(20)));\n\n// active voice count, smoothed over roughly 300 ms so the loop gain never jumps\nns = ns + (clip(nvoices, 1, 12) - ns) * (1 - exp(-1 / mstosamps(300)));\nvnorm = 1 / sqrt(ns);\n\n// feedback loop processing\nhpcoef = 1 - exp(-twopi * fb_hp / samplerate);\nxl = dcblock(in3);\nxr = dcblock(in4);\nlpl = lpl + hpcoef * (xl - lpl);\nlpr = lpr + hpcoef * (xr - lpr);\nfl = tanh((xl - lpl) * vnorm);\nfr = tanh((xr - lpr) * vnorm);\n\n// freeze blend: 0 = live, 1 = frozen, 50 ms either way\nfz = clip(fz + ((freeze > 0.5) ? 1 : -1) / max(1, mstosamps(50)), 0, 1);\n\n// write input + feedback at the head; while fading, blend with what is already there;\n// fully frozen = no writes at all\nwl = 0;\nwr = 0;\nif (fz < 1) {\n    wl = in1 + fsm * fl;\n    wr = in2 + fsm * fr;\n    if (fz > 0) {\n        wl = wl + (peek(spacebuf, idx, 0) - wl) * fz;\n        wr = wr + (peek(spacebuf, idx, 1) - wr) * fz;\n    }\n    poke(spacebuf, wl, idx, 0);\n    poke(spacebuf, wr, idx, 1);\n}\n\n// write state last\nwhead = wrap(idx + 1, 0, len);\nfbs = fsm;\nlpL = lpl;\nlpR = lpr;\nnsm = ns;\nfzmix = fz;\n\nout1 = idx;\n",
+									"code": "// sd.recorder -- br.delay.swarm shared circular-buffer writer. Lives OUTSIDE the poly~\n// in1 / in2 = live input L / R\n// in3 / in4 = feedback return L / R: summed voices, via tapin~/tapout~ in the parent\n// out1 = write head: the sample index written this sample. Send into the poly~ so\n//        every voice reads relative to it.\n// Buffer spacebuf is a placeholder name: rebind at load with \"spacebuf <real name>\".\n// On/Off: Off gates the live input only; feedback keeps writing so the swarm plays out.\n// Feedback loop: DC block, gentle one-pole highpass, scaled by 1/sqrt(active voices), tanh soft clip.\n// Without the scaling, loop gain grows with voice count and the feedback runs away.\n// Freeze: the write head keeps moving, so voices keep reading and skipping, but writing stops,\n// so the last 12 s loop. Engage/release crossfades live input with the buffer's existing\n// contents over 50 ms, so the loop seam never clicks. Feedback doesn't write while frozen.\n\nParam feedback(0, min=0, max=0.95);\nParam fb_hp(30, min=5, max=500);\nParam nvoices(4, min=1, max=12);\nParam freeze(0, min=0, max=1);\nParam on(1, min=0, max=1);\n\nHistory whead(0);\nHistory fbs(0);\nHistory lpL(0);\nHistory lpR(0);\nHistory nsm(4);\nHistory fzmix(0);\nHistory ingain(1);\n\nBuffer spacebuf;\n\n// read all state first\nidx = whead;\nfsm = fbs;\nlpl = lpL;\nlpr = lpR;\nns = nsm;\nfz = fzmix;\nig = ingain;\n\nlen = max(dim(spacebuf), 1);\n\n// feedback amount, one-pole smoothed over roughly 20 ms\nfsm = fsm + (feedback - fsm) * (1 - exp(-1 / mstosamps(20)));\n\n// active voice count, smoothed over roughly 300 ms so the loop gain never jumps\nns = ns + (clip(nvoices, 1, 12) - ns) * (1 - exp(-1 / mstosamps(300)));\nvnorm = 1 / sqrt(ns);\n\n// feedback loop processing\nhpcoef = 1 - exp(-twopi * fb_hp / samplerate);\nxl = dcblock(in3);\nxr = dcblock(in4);\nlpl = lpl + hpcoef * (xl - lpl);\nlpr = lpr + hpcoef * (xr - lpr);\nfl = tanh((xl - lpl) * vnorm);\nfr = tanh((xr - lpr) * vnorm);\n\n// On/Off: Off stops new input, so the swarm plays out what is recorded; 20 ms glide\nig = ig + clip(((on > 0.5) ? 1 : 0) - ig, -1 / max(1, mstosamps(20)), 1 / max(1, mstosamps(20)));\n\n// freeze blend: 0 = live, 1 = frozen, 50 ms either way\nfz = clip(fz + ((freeze > 0.5) ? 1 : -1) / max(1, mstosamps(50)), 0, 1);\n\n// write input + feedback at the head; while fading, blend with what is already there;\n// fully frozen = no writes at all\nwl = 0;\nwr = 0;\nif (fz < 1) {\n    wl = in1 * ig + fsm * fl;\n    wr = in2 * ig + fsm * fr;\n    if (fz > 0) {\n        wl = wl + (peek(spacebuf, idx, 0) - wl) * fz;\n        wr = wr + (peek(spacebuf, idx, 1) - wr) * fz;\n    }\n    poke(spacebuf, wl, idx, 0);\n    poke(spacebuf, wr, idx, 1);\n}\n\n// write state last\nwhead = wrap(idx + 1, 0, len);\nfbs = fsm;\nlpL = lpl;\nlpR = lpr;\nnsm = ns;\nfzmix = fz;\ningain = ig;\n\nout1 = idx;\n",
 									"fontface": 0,
 									"fontname": "<Monospaced>",
 									"fontsize": 12.0,
@@ -1134,7 +1148,7 @@
 							},
 							{
 								"box": {
-									"code": "// sd.drywet -- equal-power dry/wet mix for the br.delay.swarm device\n// in1 / in2 = dry L / R (device inputs), in3 / in4 = wet L / R (poly~ voices)\n// out1 / out2 = mixed L / R\n// drywet Param 0..100: 0 = dry only, 100 = wet only. Equal-power because dry and delayed signals\n// are uncorrelated -- a linear fade would dip around the middle. Moves are rate-limited: a full\n// 0 to 100 sweep takes at least 20 ms, so the control can't click.\n\nParam drywet(100, min=0, max=100);\n\nHistory mixpos(1);\n\nmp = mixpos;\nmp = mp + clip(clip(drywet * 0.01, 0, 1) - mp, -1 / max(1, mstosamps(20)), 1 / max(1, mstosamps(20)));\ngdry = cos(mp * pi * 0.5);\ngwet = sin(mp * pi * 0.5);\nmixpos = mp;\n\nout1 = in1 * gdry + in3 * gwet;\nout2 = in2 * gdry + in4 * gwet;\n",
+									"code": "// sd.drywet -- equal-power dry/wet mix + On/Off dry handling for br.delay.swarm\n// in1 / in2 = dry L / R (device inputs), in3 / in4 = wet L / R (poly~ voices)\n// out1 / out2 = mixed L / R\n// drywet Param 0..100: 0 = dry only, 100 = wet only. Equal-power because dry and delayed signals\n// are uncorrelated -- a linear fade would dip around the middle. Moves are rate-limited: a full\n// 0 to 100 sweep takes at least 20 ms, so the control can't click.\n// on 1 = the dry follows Dry/Wet. on 0 = the swarm plays out with the wet unchanged, and the dry is\n// full for mode 0 = Thru or silent for mode 1 = Aux. The dry gain glides over 20 ms.\n\nParam drywet(100, min=0, max=100);\nParam on(1, min=0, max=1);\nParam mode(0, min=0, max=1);\n\nHistory mixpos(1);\nHistory drypos(0);\n\nmp = mixpos;\ndp = drypos;\nstep = 1 / max(1, mstosamps(20));\nmp = mp + clip(clip(drywet * 0.01, 0, 1) - mp, -step, step);\ngdry = cos(mp * pi * 0.5);\ngwet = sin(mp * pi * 0.5);\ndt = (on > 0.5) ? gdry : ((mode < 0.5) ? 1 : 0);\ndp = dp + clip(dt - dp, -step, step);\nmixpos = mp;\ndrypos = dp;\n\nout1 = in1 * dp + in3 * gwet;\nout2 = in2 * dp + in4 * gwet;\n",
 									"fontface": 0,
 									"fontname": "<Monospaced>",
 									"fontsize": 12.0,
@@ -3604,7 +3618,9 @@
 						0.0,
 						1.0
 					],
-					"id": "obj-103", "hint" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/", "annotation" : "br.delay.swarm.abs.1.2 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+					"id": "obj-103",
+					"hint": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+					"annotation": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 					"maxclass": "panel",
 					"mode": 0,
 					"numinlets": 1,
@@ -4092,6 +4108,1852 @@
 						30.0
 					]
 				}
+			},
+			{
+				"box": {
+					"activebgoncolor": [
+						0.618934978328545,
+						0.744701397656435,
+						0.953750108255376,
+						1.0
+					],
+					"fontname": "Arial",
+					"fontsize": 10.0,
+					"id": "on-text",
+					"maxclass": "live.text",
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"",
+						""
+					],
+					"parameter_enable": 1,
+					"patching_rect": [
+						3700.0,
+						20.0,
+						48.0,
+						20.0
+					],
+					"presentation": 1,
+					"presentation_rect": [
+						156.0,
+						92.0,
+						42.0,
+						20.0
+					],
+					"saved_attribute_attributes": {
+						"activebgoncolor": {
+							"expression": "themecolor.live_numbox_triangle"
+						},
+						"valueof": {
+							"parameter_enum": [
+								"Off",
+								"On"
+							],
+							"parameter_initial": [
+								1
+							],
+							"parameter_initial_enable": 1,
+							"parameter_longname": "On/Off",
+							"parameter_mmax": 1,
+							"parameter_modmode": 0,
+							"parameter_shortname": "On/Off",
+							"parameter_type": 2
+						}
+					},
+					"text": "Off",
+					"texton": "On",
+					"varname": "On/Off"
+				}
+			},
+			{
+				"box": {
+					"activebgoncolor": [
+						0.618934978328545,
+						0.744701397656435,
+						0.953750108255376,
+						1.0
+					],
+					"fontname": "Arial",
+					"fontsize": 10.0,
+					"id": "mm-text",
+					"maxclass": "live.text",
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"",
+						""
+					],
+					"parameter_enable": 1,
+					"patching_rect": [
+						3820.0,
+						20.0,
+						48.0,
+						20.0
+					],
+					"presentation": 1,
+					"presentation_rect": [
+						156.0,
+						140.0,
+						42.0,
+						20.0
+					],
+					"saved_attribute_attributes": {
+						"activebgoncolor": {
+							"expression": "themecolor.live_numbox_triangle"
+						},
+						"valueof": {
+							"parameter_enum": [
+								"Thru",
+								"Aux"
+							],
+							"parameter_initial": [
+								0
+							],
+							"parameter_initial_enable": 1,
+							"parameter_longname": "Mix Mode",
+							"parameter_mmax": 1,
+							"parameter_modmode": 0,
+							"parameter_shortname": "Mix Mode",
+							"parameter_type": 2
+						}
+					},
+					"text": "Thru",
+					"texton": "Aux",
+					"varname": "Mix Mode"
+				}
+			},
+			{
+				"box": {
+					"id": "on-msg",
+					"maxclass": "message",
+					"text": "on $1",
+					"patching_rect": [
+						3700.0,
+						110.0,
+						42.0,
+						22.0
+					],
+					"numinlets": 2,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "on-fan",
+					"maxclass": "newobj",
+					"text": "t l l",
+					"patching_rect": [
+						3700.0,
+						140.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"",
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "mm-msg",
+					"maxclass": "message",
+					"text": "mode $1",
+					"patching_rect": [
+						3820.0,
+						110.0,
+						55.0,
+						22.0
+					],
+					"numinlets": 2,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "on-note",
+					"maxclass": "comment",
+					"numoutlets": 0,
+					"patching_rect": [
+						3700.0,
+						-60.0,
+						330.0,
+						33.0
+					],
+					"text": "On/Off: Off stops new input (sd.recorder) and the swarm plays out; Mix Mode: while Off, Thru passes the dry, Aux silences it (sd.drywet)",
+					"numinlets": 1
+				}
+			},
+			{
+				"box": {
+					"id": "on-in",
+					"maxclass": "inlet",
+					"numinlets": 0,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					],
+					"patching_rect": [
+						3700.0,
+						-18.0,
+						30.0,
+						30.0
+					],
+					"comment": "On/Off (Int) 0 = Off (no new input is recorded; the swarm plays out what it has), 1 = On. Default 1"
+				}
+			},
+			{
+				"box": {
+					"id": "mm-in",
+					"maxclass": "inlet",
+					"numinlets": 0,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					],
+					"patching_rect": [
+						3820.0,
+						-18.0,
+						30.0,
+						30.0
+					],
+					"comment": "Mix Mode (Int) 0 = Thru (Off passes the dry signal), 1 = Aux (Off silences the dry signal; the swarm still plays out). Default 0"
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-voices",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						1291.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-voices",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						3950.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-voices",
+					"maxclass": "newobj",
+					"text": "prepend voices",
+					"patching_rect": [
+						3950.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-drywet",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1381.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-drywet",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4100.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-drywet",
+					"maxclass": "newobj",
+					"text": "prepend drywet",
+					"patching_rect": [
+						4100.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-delay1",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1471.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-delay1",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4250.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-delay1",
+					"maxclass": "newobj",
+					"text": "prepend delay1",
+					"patching_rect": [
+						4250.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-delay2",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1561.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-delay2",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4400.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-delay2",
+					"maxclass": "newobj",
+					"text": "prepend delay2",
+					"patching_rect": [
+						4400.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-repeats",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1651.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-repeats",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4550.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-repeats",
+					"maxclass": "newobj",
+					"text": "prepend repeats",
+					"patching_rect": [
+						4550.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-xfade",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1741.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-xfade",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4700.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-xfade",
+					"maxclass": "newobj",
+					"text": "prepend xfade",
+					"patching_rect": [
+						4700.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-feedback",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						1831.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-feedback",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4850.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-feedback",
+					"maxclass": "newobj",
+					"text": "prepend feedback",
+					"patching_rect": [
+						4850.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-freeze",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						1921.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-freeze",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5000.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-freeze",
+					"maxclass": "newobj",
+					"text": "prepend freeze",
+					"patching_rect": [
+						5000.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-filtrate1",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2011.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-filtrate1",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5150.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-filtrate1",
+					"maxclass": "newobj",
+					"text": "prepend filtrate1",
+					"patching_rect": [
+						5150.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-filtrate2",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2101.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-filtrate2",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5300.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-filtrate2",
+					"maxclass": "newobj",
+					"text": "prepend filtrate2",
+					"patching_rect": [
+						5300.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-cutoffa",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2191.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-cutoffa",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5450.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-cutoffa",
+					"maxclass": "newobj",
+					"text": "prepend cutoffa",
+					"patching_rect": [
+						5450.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-cutoffb",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2281.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-cutoffb",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5600.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-cutoffb",
+					"maxclass": "newobj",
+					"text": "prepend cutoffb",
+					"patching_rect": [
+						5600.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-reso",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2371.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-reso",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5750.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-reso",
+					"maxclass": "newobj",
+					"text": "prepend reso",
+					"patching_rect": [
+						5750.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-filttype",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						2461.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-filttype",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5900.0,
+						1100.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-filttype",
+					"maxclass": "newobj",
+					"text": "prepend filttype",
+					"patching_rect": [
+						5900.0,
+						1130.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-filtshape",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						2551.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-filtshape",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						3950.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-filtshape",
+					"maxclass": "newobj",
+					"text": "prepend filtshape",
+					"patching_rect": [
+						3950.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-filtbypass",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						2641.0,
+						156.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-filtbypass",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						4100.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-filtbypass",
+					"maxclass": "newobj",
+					"text": "prepend filtbypass",
+					"patching_rect": [
+						4100.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-amprate1",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2731.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-amprate1",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4250.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-amprate1",
+					"maxclass": "newobj",
+					"text": "prepend amprate1",
+					"patching_rect": [
+						4250.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-amprate2",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2821.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-amprate2",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4400.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-amprate2",
+					"maxclass": "newobj",
+					"text": "prepend amprate2",
+					"patching_rect": [
+						4400.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-ampdepth",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						2911.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-ampdepth",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						4550.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-ampdepth",
+					"maxclass": "newobj",
+					"text": "prepend ampdepth",
+					"patching_rect": [
+						4550.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-ampbypass",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3001.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-ampbypass",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						4700.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-ampbypass",
+					"maxclass": "newobj",
+					"text": "prepend ampbypass",
+					"patching_rect": [
+						4700.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-ampshape",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3091.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-ampshape",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						4850.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-ampshape",
+					"maxclass": "newobj",
+					"text": "prepend ampshape",
+					"patching_rect": [
+						4850.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-panrate1",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						3181.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-panrate1",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5000.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-panrate1",
+					"maxclass": "newobj",
+					"text": "prepend panrate1",
+					"patching_rect": [
+						5000.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-panrate2",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						3271.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-panrate2",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5150.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-panrate2",
+					"maxclass": "newobj",
+					"text": "prepend panrate2",
+					"patching_rect": [
+						5150.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-panrange",
+					"maxclass": "newobj",
+					"text": "t f f",
+					"patching_rect": [
+						3361.0,
+						266.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"float",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-panrange",
+					"maxclass": "newobj",
+					"text": "change 0.",
+					"patching_rect": [
+						5300.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-panrange",
+					"maxclass": "newobj",
+					"text": "prepend panrange",
+					"patching_rect": [
+						5300.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-panbypass",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3451.0,
+						376.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-panbypass",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5450.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-panbypass",
+					"maxclass": "newobj",
+					"text": "prepend panbypass",
+					"patching_rect": [
+						5450.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-panshape",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3541.0,
+						376.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-panshape",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5600.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-panshape",
+					"maxclass": "newobj",
+					"text": "prepend panshape",
+					"patching_rect": [
+						5600.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-on",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3700.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-on",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5750.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-on",
+					"maxclass": "newobj",
+					"text": "prepend on",
+					"patching_rect": [
+						5750.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-t-mode",
+					"maxclass": "newobj",
+					"text": "t i i",
+					"patching_rect": [
+						3820.0,
+						46.0,
+						40.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-c-mode",
+					"maxclass": "newobj",
+					"text": "change 0",
+					"patching_rect": [
+						5900.0,
+						1170.0,
+						62.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 3,
+					"outlettype": [
+						"",
+						"int",
+						"int"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-p-mode",
+					"maxclass": "newobj",
+					"text": "prepend mode",
+					"patching_rect": [
+						5900.0,
+						1200.0,
+						110.0,
+						22.0
+					],
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "st-out",
+					"maxclass": "outlet",
+					"numinlets": 1,
+					"numoutlets": 0,
+					"patching_rect": [
+						6050.0,
+						1300.0,
+						30.0,
+						30.0
+					],
+					"comment": "State: each setting as <name> <value> the moment it changes (voices drywet delay1 delay2 repeats xfade feedback freeze filtrate1 filtrate2 cutoffa cutoffb reso filttype filtshape filtbypass amprate1 amprate2 ampdepth ampbypass ampshape panrate1 panrate2 panrange panbypass panshape on mode)"
+				}
+			},
+			{
+				"box": {
+					"id": "st-label",
+					"maxclass": "comment",
+					"numoutlets": 0,
+					"patching_rect": [
+						3950.0,
+						1070.0,
+						480.0,
+						20.0
+					],
+					"text": "State outlet: control -> t -> (old path) + change -> prepend <name> -> last outlet",
+					"numinlets": 1
+				}
 			}
 		],
 		"lines": [
@@ -4177,18 +6039,6 @@
 					],
 					"source": [
 						"obj-10",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-101",
-						0
-					],
-					"source": [
-						"obj-100",
 						0
 					]
 				}
@@ -4866,18 +6716,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-45",
-						0
-					],
-					"source": [
-						"obj-44",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -4889,18 +6727,6 @@
 					],
 					"source": [
 						"obj-45",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-47",
-						0
-					],
-					"source": [
-						"obj-46",
 						0
 					]
 				}
@@ -4926,18 +6752,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-49",
-						0
-					],
-					"source": [
-						"obj-48",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -4949,18 +6763,6 @@
 					],
 					"source": [
 						"obj-49",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-51",
-						0
-					],
-					"source": [
-						"obj-50",
 						0
 					]
 				}
@@ -4986,18 +6788,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-53",
-						0
-					],
-					"source": [
-						"obj-52",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5009,18 +6799,6 @@
 					],
 					"source": [
 						"obj-53",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-55",
-						0
-					],
-					"source": [
-						"obj-54",
 						0
 					]
 				}
@@ -5046,18 +6824,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-57",
-						0
-					],
-					"source": [
-						"obj-56",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5069,18 +6835,6 @@
 					],
 					"source": [
 						"obj-57",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-59",
-						0
-					],
-					"source": [
-						"obj-58",
 						0
 					]
 				}
@@ -5118,18 +6872,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-62",
-						0
-					],
-					"source": [
-						"obj-61",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5141,18 +6883,6 @@
 					],
 					"source": [
 						"obj-62",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-64",
-						0
-					],
-					"source": [
-						"obj-63",
 						0
 					]
 				}
@@ -5178,18 +6908,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-66",
-						0
-					],
-					"source": [
-						"obj-65",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5208,18 +6926,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-68",
-						0
-					],
-					"source": [
-						"obj-67",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5231,18 +6937,6 @@
 					],
 					"source": [
 						"obj-68",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-70",
-						0
-					],
-					"source": [
-						"obj-69",
 						0
 					]
 				}
@@ -5280,18 +6974,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-72",
-						0
-					],
-					"source": [
-						"obj-71",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5303,18 +6985,6 @@
 					],
 					"source": [
 						"obj-72",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-75",
-						0
-					],
-					"source": [
-						"obj-74",
 						0
 					]
 				}
@@ -5340,18 +7010,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-77",
-						0
-					],
-					"source": [
-						"obj-76",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5363,18 +7021,6 @@
 					],
 					"source": [
 						"obj-77",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-80",
-						0
-					],
-					"source": [
-						"obj-79",
 						0
 					]
 				}
@@ -5412,18 +7058,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-82",
-						0
-					],
-					"source": [
-						"obj-81",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5435,18 +7069,6 @@
 					],
 					"source": [
 						"obj-82",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-84",
-						0
-					],
-					"source": [
-						"obj-83",
 						0
 					]
 				}
@@ -5472,18 +7094,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-86",
-						0
-					],
-					"source": [
-						"obj-85",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5495,18 +7105,6 @@
 					],
 					"source": [
 						"obj-86",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-89",
-						0
-					],
-					"source": [
-						"obj-88",
 						0
 					]
 				}
@@ -5532,18 +7130,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-92",
-						0
-					],
-					"source": [
-						"obj-91",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5555,18 +7141,6 @@
 					],
 					"source": [
 						"obj-92",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-94",
-						0
-					],
-					"source": [
-						"obj-93",
 						0
 					]
 				}
@@ -5592,18 +7166,6 @@
 			{
 				"patchline": {
 					"destination": [
-						"obj-96",
-						0
-					],
-					"source": [
-						"obj-95",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
 						"obj-14",
 						0
 					],
@@ -5615,18 +7177,6 @@
 					],
 					"source": [
 						"obj-96",
-						0
-					]
-				}
-			},
-			{
-				"patchline": {
-					"destination": [
-						"obj-98",
-						0
-					],
-					"source": [
-						"obj-97",
 						0
 					]
 				}
@@ -5964,6 +7514,1758 @@
 						0
 					]
 				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"on-msg",
+						0
+					],
+					"destination": [
+						"on-fan",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"on-fan",
+						0
+					],
+					"destination": [
+						"obj-42",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"on-fan",
+						1
+					],
+					"destination": [
+						"obj-24",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"mm-msg",
+						0
+					],
+					"destination": [
+						"obj-42",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"on-in",
+						0
+					],
+					"destination": [
+						"on-text",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"mm-in",
+						0
+					],
+					"destination": [
+						"mm-text",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-44",
+						0
+					],
+					"destination": [
+						"st-t-voices",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-voices",
+						1
+					],
+					"destination": [
+						"obj-45",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-voices",
+						0
+					],
+					"destination": [
+						"st-c-voices",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-voices",
+						0
+					],
+					"destination": [
+						"st-p-voices",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-voices",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-46",
+						0
+					],
+					"destination": [
+						"st-t-drywet",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-drywet",
+						1
+					],
+					"destination": [
+						"obj-47",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-drywet",
+						0
+					],
+					"destination": [
+						"st-c-drywet",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-drywet",
+						0
+					],
+					"destination": [
+						"st-p-drywet",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-drywet",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-48",
+						0
+					],
+					"destination": [
+						"st-t-delay1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-delay1",
+						1
+					],
+					"destination": [
+						"obj-49",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-delay1",
+						0
+					],
+					"destination": [
+						"st-c-delay1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-delay1",
+						0
+					],
+					"destination": [
+						"st-p-delay1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-delay1",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-50",
+						0
+					],
+					"destination": [
+						"st-t-delay2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-delay2",
+						1
+					],
+					"destination": [
+						"obj-51",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-delay2",
+						0
+					],
+					"destination": [
+						"st-c-delay2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-delay2",
+						0
+					],
+					"destination": [
+						"st-p-delay2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-delay2",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-52",
+						0
+					],
+					"destination": [
+						"st-t-repeats",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-repeats",
+						1
+					],
+					"destination": [
+						"obj-53",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-repeats",
+						0
+					],
+					"destination": [
+						"st-c-repeats",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-repeats",
+						0
+					],
+					"destination": [
+						"st-p-repeats",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-repeats",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-54",
+						0
+					],
+					"destination": [
+						"st-t-xfade",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-xfade",
+						1
+					],
+					"destination": [
+						"obj-55",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-xfade",
+						0
+					],
+					"destination": [
+						"st-c-xfade",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-xfade",
+						0
+					],
+					"destination": [
+						"st-p-xfade",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-xfade",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-56",
+						0
+					],
+					"destination": [
+						"st-t-feedback",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-feedback",
+						1
+					],
+					"destination": [
+						"obj-57",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-feedback",
+						0
+					],
+					"destination": [
+						"st-c-feedback",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-feedback",
+						0
+					],
+					"destination": [
+						"st-p-feedback",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-feedback",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-58",
+						0
+					],
+					"destination": [
+						"st-t-freeze",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-freeze",
+						1
+					],
+					"destination": [
+						"obj-59",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-freeze",
+						0
+					],
+					"destination": [
+						"st-c-freeze",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-freeze",
+						0
+					],
+					"destination": [
+						"st-p-freeze",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-freeze",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-61",
+						0
+					],
+					"destination": [
+						"st-t-filtrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtrate1",
+						1
+					],
+					"destination": [
+						"obj-62",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtrate1",
+						0
+					],
+					"destination": [
+						"st-c-filtrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-filtrate1",
+						0
+					],
+					"destination": [
+						"st-p-filtrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-filtrate1",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-63",
+						0
+					],
+					"destination": [
+						"st-t-filtrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtrate2",
+						1
+					],
+					"destination": [
+						"obj-64",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtrate2",
+						0
+					],
+					"destination": [
+						"st-c-filtrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-filtrate2",
+						0
+					],
+					"destination": [
+						"st-p-filtrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-filtrate2",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-65",
+						0
+					],
+					"destination": [
+						"st-t-cutoffa",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-cutoffa",
+						1
+					],
+					"destination": [
+						"obj-66",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-cutoffa",
+						0
+					],
+					"destination": [
+						"st-c-cutoffa",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-cutoffa",
+						0
+					],
+					"destination": [
+						"st-p-cutoffa",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-cutoffa",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-67",
+						0
+					],
+					"destination": [
+						"st-t-cutoffb",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-cutoffb",
+						1
+					],
+					"destination": [
+						"obj-68",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-cutoffb",
+						0
+					],
+					"destination": [
+						"st-c-cutoffb",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-cutoffb",
+						0
+					],
+					"destination": [
+						"st-p-cutoffb",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-cutoffb",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-69",
+						0
+					],
+					"destination": [
+						"st-t-reso",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-reso",
+						1
+					],
+					"destination": [
+						"obj-70",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-reso",
+						0
+					],
+					"destination": [
+						"st-c-reso",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-reso",
+						0
+					],
+					"destination": [
+						"st-p-reso",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-reso",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-71",
+						0
+					],
+					"destination": [
+						"st-t-filttype",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filttype",
+						1
+					],
+					"destination": [
+						"obj-72",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filttype",
+						0
+					],
+					"destination": [
+						"st-c-filttype",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-filttype",
+						0
+					],
+					"destination": [
+						"st-p-filttype",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-filttype",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-74",
+						0
+					],
+					"destination": [
+						"st-t-filtshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtshape",
+						1
+					],
+					"destination": [
+						"obj-75",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtshape",
+						0
+					],
+					"destination": [
+						"st-c-filtshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-filtshape",
+						0
+					],
+					"destination": [
+						"st-p-filtshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-filtshape",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-76",
+						0
+					],
+					"destination": [
+						"st-t-filtbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtbypass",
+						1
+					],
+					"destination": [
+						"obj-77",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-filtbypass",
+						0
+					],
+					"destination": [
+						"st-c-filtbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-filtbypass",
+						0
+					],
+					"destination": [
+						"st-p-filtbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-filtbypass",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-79",
+						0
+					],
+					"destination": [
+						"st-t-amprate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-amprate1",
+						1
+					],
+					"destination": [
+						"obj-80",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-amprate1",
+						0
+					],
+					"destination": [
+						"st-c-amprate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-amprate1",
+						0
+					],
+					"destination": [
+						"st-p-amprate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-amprate1",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-81",
+						0
+					],
+					"destination": [
+						"st-t-amprate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-amprate2",
+						1
+					],
+					"destination": [
+						"obj-82",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-amprate2",
+						0
+					],
+					"destination": [
+						"st-c-amprate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-amprate2",
+						0
+					],
+					"destination": [
+						"st-p-amprate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-amprate2",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-83",
+						0
+					],
+					"destination": [
+						"st-t-ampdepth",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampdepth",
+						1
+					],
+					"destination": [
+						"obj-84",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampdepth",
+						0
+					],
+					"destination": [
+						"st-c-ampdepth",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-ampdepth",
+						0
+					],
+					"destination": [
+						"st-p-ampdepth",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-ampdepth",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-85",
+						0
+					],
+					"destination": [
+						"st-t-ampbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampbypass",
+						1
+					],
+					"destination": [
+						"obj-86",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampbypass",
+						0
+					],
+					"destination": [
+						"st-c-ampbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-ampbypass",
+						0
+					],
+					"destination": [
+						"st-p-ampbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-ampbypass",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-88",
+						0
+					],
+					"destination": [
+						"st-t-ampshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampshape",
+						1
+					],
+					"destination": [
+						"obj-89",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-ampshape",
+						0
+					],
+					"destination": [
+						"st-c-ampshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-ampshape",
+						0
+					],
+					"destination": [
+						"st-p-ampshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-ampshape",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-91",
+						0
+					],
+					"destination": [
+						"st-t-panrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrate1",
+						1
+					],
+					"destination": [
+						"obj-92",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrate1",
+						0
+					],
+					"destination": [
+						"st-c-panrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-panrate1",
+						0
+					],
+					"destination": [
+						"st-p-panrate1",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-panrate1",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-93",
+						0
+					],
+					"destination": [
+						"st-t-panrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrate2",
+						1
+					],
+					"destination": [
+						"obj-94",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrate2",
+						0
+					],
+					"destination": [
+						"st-c-panrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-panrate2",
+						0
+					],
+					"destination": [
+						"st-p-panrate2",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-panrate2",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-95",
+						0
+					],
+					"destination": [
+						"st-t-panrange",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrange",
+						1
+					],
+					"destination": [
+						"obj-96",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panrange",
+						0
+					],
+					"destination": [
+						"st-c-panrange",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-panrange",
+						0
+					],
+					"destination": [
+						"st-p-panrange",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-panrange",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-97",
+						0
+					],
+					"destination": [
+						"st-t-panbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panbypass",
+						1
+					],
+					"destination": [
+						"obj-98",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panbypass",
+						0
+					],
+					"destination": [
+						"st-c-panbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-panbypass",
+						0
+					],
+					"destination": [
+						"st-p-panbypass",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-panbypass",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"obj-100",
+						0
+					],
+					"destination": [
+						"st-t-panshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panshape",
+						1
+					],
+					"destination": [
+						"obj-101",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-panshape",
+						0
+					],
+					"destination": [
+						"st-c-panshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-panshape",
+						0
+					],
+					"destination": [
+						"st-p-panshape",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-panshape",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"on-text",
+						0
+					],
+					"destination": [
+						"st-t-on",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-on",
+						1
+					],
+					"destination": [
+						"on-msg",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-on",
+						0
+					],
+					"destination": [
+						"st-c-on",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-on",
+						0
+					],
+					"destination": [
+						"st-p-on",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-on",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"mm-text",
+						0
+					],
+					"destination": [
+						"st-t-mode",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-mode",
+						1
+					],
+					"destination": [
+						"mm-msg",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-t-mode",
+						0
+					],
+					"destination": [
+						"st-c-mode",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-c-mode",
+						0
+					],
+					"destination": [
+						"st-p-mode",
+						0
+					]
+				}
+			},
+			{
+				"patchline": {
+					"source": [
+						"st-p-mode",
+						0
+					],
+					"destination": [
+						"st-out",
+						0
+					]
+				}
 			}
 		],
 		"parameters": {
@@ -6123,7 +9425,17 @@
 					]
 				}
 			},
-			"inherited_shortname": 1
+			"inherited_shortname": 1,
+			"on-text": [
+				"On/Off",
+				"On/Off",
+				0
+			],
+			"mm-text": [
+				"Mix Mode",
+				"Mix Mode",
+				0
+			]
 		},
 		"autosave": 0,
 		"editing_bgcolor": [

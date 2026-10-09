@@ -1,4 +1,4 @@
-# Ableton Max for Live device: br.delay.swarm.1.2
+# Ableton Max for Live device: br.delay.swarm.1.3
 
 
 
@@ -15,9 +15,16 @@ These files were created with Max 9.
 
 ## Table of Contents 
 
+[What's New in 1.3](#whats-new-in-13)  
 [About](#About)  
 [What is a Max for Live Device?](#M4L)  
 [How To Install](#Install)  
+
+## What's New in 1.3
+
+- **On/Off:** a new switch. Off stops new input and lets the swarm play out what it has already recorded. The default is On, so 1.3 sounds exactly like 1.2 until you use it.
+- **Mix Mode (Thru / Aux):** what the dry signal does while the swarm is Off. "Thru" (the default) passes it; "Aux" silences it, for use on a send/return.
+- **Live sets:** the device is a new file, so existing sets keep the 1.2 device until you swap the new one in. On/Off and Mix Mode can be automated like any other parameter.
 
 ## <a name="About"></a>About
 
@@ -28,6 +35,10 @@ This is a patch//device built in Max/MSP for spacious, ever-changing delays on a
 **Voices:** The number of active delay voices, between 1 and 12. The default is 4. At least one voice is always on. The more voices, the denser the texture and the higher the CPU use. Voices fade in and out when the number changes.
 
 **Dry/Wet:** The balance between the dry signal and the delays, between 0 and 100 %. The default is 100 (delays only). The mix is equal-power, so the level stays even across the range.
+
+**On/Off:** Turns the swarm on or off. The default is On. Off stops recording new input, so the voices play out what is already recorded (and any Feedback tail) and then fall silent; nothing is cut off. What you hear of the dry signal while Off depends on Mix Mode. Switching glides over 20 ms, so it never clicks.
+
+**Mix Mode (Thru / Aux):** What happens to your dry signal while the swarm is Off. "Thru" (the default) lets the dry signal pass at full level: use it when the swarm sits on a track. "Aux" silences it, so only the swarm's tail is heard: use it on a send/return. While On, the dry signal follows Dry/Wet in both modes.
 
 **Delay 1:** One end of the range of delay times, in ms, between 0 and 10000. The default is 1000 ms. Each time a voice skips, it picks a random delay time between "Delay 1" and "Delay 2". Either one can be the larger.
 
@@ -73,7 +84,7 @@ Max For Live brings the power and flexibility of Max to Ableton Live. Max For Li
 2. For Macintosh:  
 Go to your user folder  
 Then Music > Ableton > User Library > Presets > Audio Effects > Max Audio Effect  
-Copy and paste br.delay.swarm.1.2.amxd into that folder
+Copy and paste br.delay.swarm.1.3.amxd into that folder
 
 3. For Windows: \Users\[username]\Documents\Ableton\User Library\Presets\Audio Effects\Max Audio Effect  
 

@@ -1,6 +1,6 @@
 # Max/MSP Patches, Abstractions, Externals, RNBO, VSTs, and Ableton Max for Live 
 
-## br.delay.swarm.1.2
+## br.delay.swarm.1.3
 
 
 
@@ -9,19 +9,29 @@ By Brian Riordan
 [brianriordanmusic@gmail.com](mailto:brianriordanmusic@gmail.com)  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.delay.swarm.1.2, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
+Repository for br.delay.swarm.1.3, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. 
 
 ## Links
 
+[What's New in 1.3](#whats-new-in-13)  
 [What's New in 1.2](#whats-new-in-12)  
 [What's New in 1.1](#whats-new-in-11)  
 [About](#About)   
 [Ableton Max for Live Device](https://github.com/guaguanco127/br.delay.swarm/tree/main/Ableton%20Max%20For%20Live) To use inside of Ableton Suite   
 [Max/MSP Abstraction](https://github.com/guaguanco127/br.delay.swarm/tree/main/MaxMSP%20Abstraction) To use as an abstraction within Max/MSP   
 
+
+## What's New in 1.3
+
+- **On/Off:** a new switch. Off stops new input and lets the swarm play out what it has already recorded. The default is On, so 1.3 sounds exactly like 1.2 until you use it.
+- **Mix Mode (Thru / Aux):** what the dry signal does while the swarm is Off. "Thru" (the default) passes it; "Aux" silences it, for use on a send/return.
+- **State outlet** (abstraction only): a new last outlet sends every setting as a named message the moment it changes (`voices`, `drywet`, `delay1` ... `on`, `mode`). See [State outlet](https://github.com/guaguanco127/br.delay.swarm/tree/main/MaxMSP%20Abstraction#State).
+- **Two new inlets** for On/Off (inlet 29) and Mix Mode (inlet 30), after the existing ones. Nothing else moved, so 1.3 swaps in for 1.2 without rewiring: retype the object as `br.delay.swarm.abs.1.3`.
+- **New example patch:** _br.delay.swarm.example.1.3 with a demo source, messages into every inlet and a State outlet tab.
+- **Live sets:** the device is a new file, so existing sets keep the 1.2 device until you swap the new one in. On/Off and Mix Mode can be automated like any other parameter.
 
 ## What's New in 1.2
 
@@ -42,6 +52,10 @@ This is a patch//device built in Max/MSP for spacious, ever-changing delays on a
 **Voices:** The number of active delay voices, between 1 and 12. The default is 4. At least one voice is always on. The more voices, the denser the texture and the higher the CPU use. Voices fade in and out when the number changes.
 
 **Dry/Wet:** The balance between the dry signal and the delays, between 0 and 100 %. The default is 100 (delays only). The mix is equal-power, so the level stays even across the range.
+
+**On/Off:** Turns the swarm on or off. The default is On. Off stops recording new input, so the voices play out what is already recorded (and any Feedback tail) and then fall silent; nothing is cut off. What you hear of the dry signal while Off depends on Mix Mode. Switching glides over 20 ms, so it never clicks.
+
+**Mix Mode (Thru / Aux):** What happens to your dry signal while the swarm is Off. "Thru" (the default) lets the dry signal pass at full level: use it when the swarm sits on a track. "Aux" silences it, so only the swarm's tail is heard: use it on a send/return. While On, the dry signal follows Dry/Wet in both modes.
 
 **Delay 1:** One end of the range of delay times, in ms, between 0 and 10000. The default is 1000 ms. Each time a voice skips, it picks a random delay time between "Delay 1" and "Delay 2". Either one can be the larger.
 
