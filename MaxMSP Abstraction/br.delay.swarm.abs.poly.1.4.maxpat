@@ -627,19 +627,19 @@
                                                             "modernui": 1
                                                         },
                                                         "classnamespace": "dsp.gen",
-                                                        "rect": [ 100.0, 100.0, 600.0, 450.0 ],
+                                                        "rect": [ 100.0, 100.0, 672.0, 450.0 ],
                                                         "boxes": [
                                                             {
                                                                 "box": {
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-1",
-                                                                    "linecount": 19,
+                                                                    "linecount": 2,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 50.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 20.0, 200.0, 35.0 ],
                                                                     "text": "in 1 @comment \"Frequency Hz >= 0\" @default 1 @min 0"
                                                                 }
                                                             },
@@ -648,12 +648,12 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-2",
-                                                                    "linecount": 39,
+                                                                    "linecount": 4,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 130.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 20.0, 200.0, 62.0 ],
                                                                     "text": "in 2 @comment \"Shape 0-6: 0 sine 1 saw up 2 tri 3 saw down 4 square 5 S&H 6 curved random\" @default 0 @min 0 @max 6"
                                                                 }
                                                             },
@@ -668,7 +668,7 @@
                                                                     "numinlets": 2,
                                                                     "numoutlets": 2,
                                                                     "outlettype": [ "", "" ],
-                                                                    "patching_rect": [ 50.0, 80.0, 400.0, 200.0 ]
+                                                                    "patching_rect": [ 20.0, 107.0, 400.0, 200.0 ]
                                                                 }
                                                             },
                                                             {
@@ -676,11 +676,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-4",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 50.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 337.0, 218.0, 22.0 ],
                                                                     "text": "out 1 @comment \"LFO bipolar -1 to 1\""
                                                                 }
                                                             },
@@ -689,11 +688,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-5",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 130.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 337.0, 221.0, 22.0 ],
                                                                     "text": "out 2 @comment \"LFO unipolar 0 to 1\""
                                                                 }
                                                             }
@@ -1383,19 +1381,19 @@
                                                             "modernui": 1
                                                         },
                                                         "classnamespace": "dsp.gen",
-                                                        "rect": [ 100.0, 100.0, 600.0, 450.0 ],
+                                                        "rect": [ 100.0, 100.0, 672.0, 450.0 ],
                                                         "boxes": [
                                                             {
                                                                 "box": {
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-1",
-                                                                    "linecount": 19,
+                                                                    "linecount": 2,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 50.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 20.0, 200.0, 35.0 ],
                                                                     "text": "in 1 @comment \"Frequency Hz >= 0\" @default 1 @min 0"
                                                                 }
                                                             },
@@ -1404,12 +1402,12 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-2",
-                                                                    "linecount": 39,
+                                                                    "linecount": 4,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 130.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 20.0, 200.0, 62.0 ],
                                                                     "text": "in 2 @comment \"Shape 0-6: 0 sine 1 saw up 2 tri 3 saw down 4 square 5 S&H 6 curved random\" @default 0 @min 0 @max 6"
                                                                 }
                                                             },
@@ -1424,7 +1422,7 @@
                                                                     "numinlets": 2,
                                                                     "numoutlets": 2,
                                                                     "outlettype": [ "", "" ],
-                                                                    "patching_rect": [ 50.0, 80.0, 400.0, 200.0 ]
+                                                                    "patching_rect": [ 20.0, 107.0, 400.0, 200.0 ]
                                                                 }
                                                             },
                                                             {
@@ -1432,11 +1430,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-4",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 50.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 337.0, 218.0, 22.0 ],
                                                                     "text": "out 1 @comment \"LFO bipolar -1 to 1\""
                                                                 }
                                                             },
@@ -1445,11 +1442,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-5",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 130.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 337.0, 221.0, 22.0 ],
                                                                     "text": "out 2 @comment \"LFO unipolar 0 to 1\""
                                                                 }
                                                             }
@@ -2035,19 +2031,19 @@
                                                             "modernui": 1
                                                         },
                                                         "classnamespace": "dsp.gen",
-                                                        "rect": [ 100.0, 100.0, 600.0, 450.0 ],
+                                                        "rect": [ 100.0, 100.0, 672.0, 450.0 ],
                                                         "boxes": [
                                                             {
                                                                 "box": {
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-1",
-                                                                    "linecount": 19,
+                                                                    "linecount": 2,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 50.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 20.0, 200.0, 35.0 ],
                                                                     "text": "in 1 @comment \"Frequency Hz >= 0\" @default 1 @min 0"
                                                                 }
                                                             },
@@ -2056,12 +2052,12 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-2",
-                                                                    "linecount": 39,
+                                                                    "linecount": 4,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 0,
                                                                     "numoutlets": 1,
                                                                     "outlettype": [ "" ],
-                                                                    "patching_rect": [ 130.0, 20.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 20.0, 200.0, 62.0 ],
                                                                     "text": "in 2 @comment \"Shape 0-6: 0 sine 1 saw up 2 tri 3 saw down 4 square 5 S&H 6 curved random\" @default 0 @min 0 @max 6"
                                                                 }
                                                             },
@@ -2076,7 +2072,7 @@
                                                                     "numinlets": 2,
                                                                     "numoutlets": 2,
                                                                     "outlettype": [ "", "" ],
-                                                                    "patching_rect": [ 50.0, 80.0, 400.0, 200.0 ]
+                                                                    "patching_rect": [ 20.0, 107.0, 400.0, 200.0 ]
                                                                 }
                                                             },
                                                             {
@@ -2084,11 +2080,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-4",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 50.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 20.0, 337.0, 218.0, 22.0 ],
                                                                     "text": "out 1 @comment \"LFO bipolar -1 to 1\""
                                                                 }
                                                             },
@@ -2097,11 +2092,10 @@
                                                                     "fontname": "Arial",
                                                                     "fontsize": 12.0,
                                                                     "id": "obj-5",
-                                                                    "linecount": 13,
                                                                     "maxclass": "newobj",
                                                                     "numinlets": 1,
                                                                     "numoutlets": 0,
-                                                                    "patching_rect": [ 130.0, 320.0, 30.0, 22.0 ],
+                                                                    "patching_rect": [ 401.0, 337.0, 221.0, 22.0 ],
                                                                     "text": "out 2 @comment \"LFO unipolar 0 to 1\""
                                                                 }
                                                             }
