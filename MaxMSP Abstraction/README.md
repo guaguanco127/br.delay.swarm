@@ -1,5 +1,5 @@
 # Max/MSP Abstraction:   
-## br.delay.swarm.1.3
+## br.delay.swarm.1.4
 
 
 
@@ -8,13 +8,14 @@ guaguanco127 [at] gmail [dot] com
 brianriordanmusic [at] gmail [dot] com  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.delay.swarm.1.3, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
+Repository for br.delay.swarm.1.4, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. Version 1.1 replaced the control-message inlet with one inlet per control. Version 1.2 renamed the abstraction from br.spacedelay to br.delay.swarm -- nothing else changed; if you used 1.1, retype the object box as `br.delay.swarm.abs.1.2` (no rewiring needed). Version 1.3 added On/Off, Mix Mode (Thru / Aux), a State outlet and an example patch. 
 
 ## Table of Contents 
 
+[What's New in 1.4](#whats-new-in-14)  
 [What's New in 1.3](#whats-new-in-13)  
 [About](#About)   
 [What is an abstraction?](#Abstraction)  
@@ -24,6 +25,11 @@ These files were created with Max 9. Version 1.1 replaced the control-message in
 [Example Patch](#Example) 
  
  
+
+## What's New in 1.4
+
+- **Frozen Max for Live device.** The device now carries its helper files inside it, so copying the .amxd alone is enough.
+- **One version number.** Every file in this repository is now 1.4, including the helper files. Nothing changed in the sound.
 
 ## What's New in 1.3
 
@@ -91,13 +97,13 @@ By saving your logic in an abstraction, you can create modules that can be used 
 
 1. Make sure you have Max 9 installed in your computer. And, make sure you are using a Max patch that is inside of a folder.  
 
-2. Copy and paste br.delay.swarm.abs.1.3.maxpat inside of the same folder as the Max patch you are using. To try it first, copy _br.delay.swarm.example.1.3.maxpat too. 
+2. Copy and paste br.delay.swarm.abs.1.4.maxpat inside of the same folder as the Max patch you are using. To try it first, copy _br.delay.swarm.example.1.4.maxpat too. 
 
-3. Also, copy and paste the file called br.delay.swarm.abs.poly.1.2.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
+3. Also, copy and paste the file called br.delay.swarm.abs.poly.1.4.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The abstraction will not work without this file.**     
 
-4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.delay.swarm.abs.1.3.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
+4. To use the built-in controls, create a bpatcher object. Then, go inside of its inspector, select "choose" next to "Patcher File" and select the br.delay.swarm.abs.1.4.maxpat located within the same folder as your project. Size the bpatcher to 628 x 169 to show all of the controls. No argument is needed -- every instance creates its own internal buffer, so you can use as many as you like side by side.
 
-5. Alternatively, create an object called br.delay.swarm.abs.1.3 (for example: [br.delay.swarm.abs.1.3], do not include brackets) and control it through its inlets (see below).
+5. Alternatively, create an object called br.delay.swarm.abs.1.4 (for example: [br.delay.swarm.abs.1.4], do not include brackets) and control it through its inlets (see below).
 
 ## <a name="Use"></a>How To Use
 
@@ -177,7 +183,7 @@ The last outlet sends the current settings as named messages the moment they cha
 
 ## <a name="Example"></a>Example Patch
 
-Open _br.delay.swarm.example.1.3.maxpat (keep it in the same folder as the abstraction and br.delay.swarm.abs.poly.1.2.maxpat). Turn on the audio with the toggle, then raise the gain slider, which starts muted.
+Open _br.delay.swarm.example.1.4.maxpat (keep it in the same folder as the abstraction and br.delay.swarm.abs.poly.1.4.maxpat). Turn on the audio with the toggle, then raise the gain slider, which starts muted.
 
 - **Source:** the demo saw plucks (220 Hz left, 330 Hz right) start when the patch opens; turn on the mic / line in 1 + 2 toggle to use your own sound.
 - **Messages:** every control has a row of messages (or a toggle) wired to its inlet; the panel follows.

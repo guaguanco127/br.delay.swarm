@@ -10,7 +10,7 @@
         },
         "classnamespace": "box",
         "rect": [ 139.0, 87.0, 1350.0, 883.0 ],
-        "description": "_br.delay.swarm.example.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+        "description": "_br.delay.swarm.example.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
         "showontab": 1,
         "boxes": [
             {
@@ -388,7 +388,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 887.0, 5.0, 468.0, 33.0 ],
-                    "text": "_br.delay.swarm.example.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
+                    "text": "_br.delay.swarm.example.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/"
                 }
             },
             {
@@ -415,7 +415,7 @@
                     "lockeddragscroll": 0,
                     "lockedsize": 0,
                     "maxclass": "bpatcher",
-                    "name": "br.delay.swarm.abs.1.3.maxpat",
+                    "name": "br.delay.swarm.abs.1.4.maxpat",
                     "numinlets": 30,
                     "numoutlets": 3,
                     "offset": [ 0.0, 0.0 ],
@@ -434,7 +434,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 15.0, 490.0, 520.0, 20.0 ],
-                    "text": "br.delay.swarm.abs.1.3 (bpatcher). It opens ON with Dry/Wet at 100 % (delays only)."
+                    "text": "br.delay.swarm.abs.1.4 (bpatcher). It opens ON with Dry/Wet at 100 % (delays only)."
                 }
             },
             {
@@ -447,7 +447,7 @@
                     "numinlets": 1,
                     "numoutlets": 0,
                     "patching_rect": [ 660.0, 520.0, 300.0, 74.0 ],
-                    "text": "Keep these files together, next to your patch: br.delay.swarm.abs.1.3.maxpat and br.delay.swarm.abs.poly.1.2.maxpat (the voice, loaded by poly~). Mix Mode: Thru = dry passes while Off; Aux = silent while Off."
+                    "text": "Keep these files together, next to your patch: br.delay.swarm.abs.1.4.maxpat and br.delay.swarm.abs.poly.1.4.maxpat (the voice, loaded by poly~). Mix Mode: Thru = dry passes while Off; Aux = silent while Off."
                 }
             },
             {

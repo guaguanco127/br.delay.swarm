@@ -1,6 +1,6 @@
 {
 	"patcher": {
-		"description": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+		"description": "br.delay.swarm.abs.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 		"fileversion": 1,
 		"appversion": {
 			"major": 9,
@@ -30,7 +30,7 @@
 						520.0,
 						40.0
 					],
-					"text": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/",
+					"text": "br.delay.swarm.abs.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com\nhttps://github.com/guaguanco127/",
 					"linecount": 2
 				}
 			},
@@ -733,7 +733,7 @@
 						200.0,
 						22.0
 					],
-					"text": "poly~ br.delay.swarm.abs.poly.1.2 12"
+					"text": "poly~ br.delay.swarm.abs.poly.1.4 12"
 				}
 			},
 			{
@@ -3619,8 +3619,8 @@
 						1.0
 					],
 					"id": "obj-103",
-					"hint": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
-					"annotation": "br.delay.swarm.abs.1.3 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+					"hint": "br.delay.swarm.abs.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
+					"annotation": "br.delay.swarm.abs.1.4 -- Created by Brian Riordan, guaguanco127@gmail.com -- https://github.com/guaguanco127/",
 					"maxclass": "panel",
 					"mode": 0,
 					"numinlets": 1,

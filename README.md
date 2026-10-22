@@ -1,6 +1,6 @@
 # Max/MSP Patches, Abstractions, Externals, RNBO, VSTs, and Ableton Max for Live 
 
-## br.delay.swarm.1.3
+## br.delay.swarm.1.4
 
 
 
@@ -9,13 +9,14 @@ guaguanco127 [at] gmail [dot] com
 brianriordanmusic [at] gmail [dot] com  
 [https://www.brianriordanmusic.com/](https://www.brianriordanmusic.com/) 
   
-Repository for br.delay.swarm.1.3, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
+Repository for br.delay.swarm.1.4, with all related files, can be found here: [https://github.com/guaguanco127/br.delay.swarm](https://github.com/guaguanco127/br.delay.swarm)  
 Additional programs can be found here: [https://github.com/guaguanco127/br.max](https://github.com/guaguanco127/br.max)
 
 These files were created with Max 9. 
 
 ## Links
 
+[What's New in 1.4](#whats-new-in-14)  
 [What's New in 1.3](#whats-new-in-13)  
 [What's New in 1.2](#whats-new-in-12)  
 [What's New in 1.1](#whats-new-in-11)  
@@ -23,6 +24,11 @@ These files were created with Max 9.
 [Ableton Max for Live Device](https://github.com/guaguanco127/br.delay.swarm/tree/main/Ableton%20Max%20For%20Live) To use inside of Ableton Suite   
 [Max/MSP Abstraction](https://github.com/guaguanco127/br.delay.swarm/tree/main/MaxMSP%20Abstraction) To use as an abstraction within Max/MSP   
 
+
+## What's New in 1.4
+
+- **Frozen Max for Live device.** The device now carries its helper files inside it, so copying the .amxd alone is enough.
+- **One version number.** Every file in this repository is now 1.4, including the helper files. Nothing changed in the sound.
 
 ## What's New in 1.3
 

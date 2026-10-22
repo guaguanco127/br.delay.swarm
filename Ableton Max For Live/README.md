@@ -1,4 +1,4 @@
-# Ableton Max for Live device: br.delay.swarm.1.3
+# Ableton Max for Live device: br.delay.swarm.1.4
 
 
 
@@ -15,10 +15,16 @@ These files were created with Max 9.
 
 ## Table of Contents 
 
+[What's New in 1.4](#whats-new-in-14)  
 [What's New in 1.3](#whats-new-in-13)  
 [About](#About)  
 [What is a Max for Live Device?](#M4L)  
 [How To Install](#Install)  
+
+## What's New in 1.4
+
+- **Frozen Max for Live device.** The device now carries its helper files inside it, so copying the .amxd alone is enough.
+- **One version number.** Every file in this repository is now 1.4, including the helper files. Nothing changed in the sound.
 
 ## What's New in 1.3
 
@@ -84,12 +90,13 @@ Max For Live brings the power and flexibility of Max to Ableton Live. Max For Li
 2. For Macintosh:  
 Go to your user folder  
 Then Music > Ableton > User Library > Presets > Audio Effects > Max Audio Effect  
-Copy and paste br.delay.swarm.1.3.amxd into that folder
+Copy and paste br.delay.swarm.1.4.amxd into that folder
 
 3. For Windows: \Users\[username]\Documents\Ableton\User Library\Presets\Audio Effects\Max Audio Effect  
 
-4. Also, copy and paste the file called br.delay.swarm.poly.1.2.maxpat into the same folder. If this file is already there, then there is no reason to copy and paste it. **The device will not work without this file.**    
-  
-5. Open Ableton Live. On the left-hand side, look for Max for Live > Max Audio Effect and then the name of this device.
+4. Open Ableton Live. On the left-hand side, look for Max for Live > Max Audio Effect and then the name of this device.
 
-6. Either double-click on the device, or drag/drop it onto the track where you wish to use it. You can use several br.delay.swarm devices in the same Live set -- each one has its own internal buffer. Every control, including Freeze, can be automated like any other parameter.
+5. Either double-click on the device, or drag/drop it onto the track where you wish to use it. You can use several br.delay.swarm devices in the same Live set -- each one has its own internal buffer. Every control, including Freeze, can be automated like any other parameter.
+
+**The device is frozen:** its helper files are inside the .amxd, so no other files are needed.
+
