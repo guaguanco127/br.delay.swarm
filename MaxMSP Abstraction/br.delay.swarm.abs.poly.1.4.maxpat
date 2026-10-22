@@ -402,8 +402,8 @@
                         "rect": [
                             100.0,
                             100.0,
-                            900.0,
-                            700.0
+                            1400.0,
+                            833.0
                         ],
                         "boxes": [
                             {
@@ -416,14 +416,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        20,
-                                        20,
-                                        240,
-                                        22.0
+                                        20.0,
+                                        20.0,
+                                        240.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "in 1 @comment \"Write Head index from sd.recorder\""
+                                    "text": "in 1 @comment \"Write Head index from sd.recorder\"",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -436,14 +437,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        280,
-                                        20,
-                                        145,
-                                        22.0
+                                        280.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param delay1 1000 @min 0 @max 10000"
+                                    "text": "param delay1 1000 @min 0 @max 10000",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -456,14 +458,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        430,
-                                        20,
-                                        145,
-                                        22.0
+                                        445.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param delay2 5000 @min 0 @max 10000"
+                                    "text": "param delay2 5000 @min 0 @max 10000",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -476,14 +479,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        580,
-                                        20,
-                                        145,
-                                        22.0
+                                        610.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param repeats 2 @min 1 @max 4"
+                                    "text": "param repeats 2 @min 1 @max 4",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -496,14 +500,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        730,
-                                        20,
-                                        145,
-                                        22.0
+                                        775.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param xfade 1000 @min 15 @max 2000"
+                                    "text": "param xfade 1000 @min 15 @max 2000",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -516,14 +521,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        880,
-                                        20,
-                                        145,
-                                        22.0
+                                        940.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_rate1 0.05 @min 0.001 @max 20"
+                                    "text": "param f_rate1 0.05 @min 0.001 @max 20",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -536,14 +542,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1030,
-                                        20,
-                                        145,
-                                        22.0
+                                        1105.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_rate2 0.5 @min 0.001 @max 20"
+                                    "text": "param f_rate2 0.5 @min 0.001 @max 20",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -556,14 +563,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1180,
-                                        20,
-                                        145,
-                                        22.0
+                                        1270.0,
+                                        20.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_shape 0 @min 0 @max 6"
+                                    "text": "param f_shape 0 @min 0 @max 6",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -576,8 +584,8 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        280,
-                                        50,
+                                        280.0,
+                                        71.0,
                                         40.0,
                                         22.0
                                     ],
@@ -596,14 +604,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        430,
-                                        50,
-                                        145,
-                                        22.0
+                                        445.0,
+                                        71.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_lo 300 @min 20 @max 20000"
+                                    "text": "param f_lo 300 @min 20 @max 20000",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -616,14 +625,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        580,
-                                        50,
-                                        145,
-                                        22.0
+                                        610.0,
+                                        71.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_hi 4000 @min 20 @max 20000"
+                                    "text": "param f_hi 4000 @min 20 @max 20000",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -636,14 +646,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        730,
-                                        50,
-                                        145,
-                                        22.0
+                                        775.0,
+                                        71.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_reso 0.3 @min 0 @max 1"
+                                    "text": "param f_reso 0.3 @min 0 @max 1",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -656,14 +667,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        880,
-                                        50,
-                                        145,
-                                        22.0
+                                        940.0,
+                                        71.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_type 0 @min 0 @max 1"
+                                    "text": "param f_type 0 @min 0 @max 1",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -676,8 +688,8 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1030,
-                                        50,
+                                        1105.0,
+                                        71.0,
                                         40.0,
                                         22.0
                                     ],
@@ -696,14 +708,15 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1180,
-                                        50,
-                                        145,
-                                        22.0
+                                        1270.0,
+                                        71.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
                                     "fontsize": 12.0,
-                                    "text": "param f_bypass 0 @min 0 @max 1"
+                                    "text": "param f_bypass 0 @min 0 @max 1",
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -717,9 +730,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        20,
-                                        100,
-                                        420,
+                                        20.0,
+                                        249.0,
+                                        420.0,
                                         260.0
                                     ],
                                     "fontname": "Arial",
@@ -738,9 +751,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        460,
-                                        400,
-                                        120,
+                                        460.0,
+                                        549.0,
+                                        120.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -1350,9 +1363,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        20,
-                                        460,
-                                        560,
+                                        20.0,
+                                        609.0,
+                                        560.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -1759,9 +1772,9 @@
                                     "numoutlets": 0,
                                     "outlettype": [],
                                     "patching_rect": [
-                                        20,
-                                        520,
-                                        120,
+                                        960.0,
+                                        761.0,
+                                        174.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -1777,9 +1790,9 @@
                                     "numoutlets": 0,
                                     "outlettype": [],
                                     "patching_rect": [
-                                        160,
-                                        520,
-                                        120,
+                                        1250.5,
+                                        761.0,
+                                        174.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -1798,13 +1811,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        280,
-                                        80,
-                                        145,
-                                        22.0
+                                        280.0,
+                                        122.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -1818,13 +1832,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        430,
-                                        80,
-                                        145,
-                                        22.0
+                                        445.0,
+                                        122.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -1838,13 +1853,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        580,
-                                        80,
-                                        145,
-                                        22.0
+                                        610.0,
+                                        122.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -1858,8 +1874,8 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        730,
-                                        80,
+                                        775.0,
+                                        122.0,
                                         40.0,
                                         22.0
                                     ],
@@ -1878,13 +1894,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        880,
-                                        80,
-                                        145,
-                                        22.0
+                                        940.0,
+                                        122.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -1898,13 +1915,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1030,
-                                        80,
-                                        145,
-                                        22.0
+                                        1105.0,
+                                        122.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -1919,9 +1937,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        620,
-                                        400,
-                                        120,
+                                        620.0,
+                                        549.0,
+                                        120.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -2531,9 +2549,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        620,
-                                        480,
-                                        300,
+                                        620.0,
+                                        629.0,
+                                        300.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -2814,13 +2832,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        280,
-                                        140,
-                                        145,
-                                        22.0
+                                        280.0,
+                                        173.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -2834,13 +2853,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        430,
-                                        140,
-                                        145,
-                                        22.0
+                                        445.0,
+                                        173.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -2854,13 +2874,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        580,
-                                        140,
-                                        145,
-                                        22.0
+                                        610.0,
+                                        173.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -2874,13 +2895,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        730,
-                                        140,
-                                        145,
-                                        22.0
+                                        775.0,
+                                        173.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -2894,13 +2916,14 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        880,
-                                        140,
-                                        145,
-                                        22.0
+                                        940.0,
+                                        173.0,
+                                        150.0,
+                                        36.0
                                     ],
                                     "fontname": "Arial",
-                                    "fontsize": 12.0
+                                    "fontsize": 12.0,
+                                    "linecount": 2
                                 }
                             },
                             {
@@ -2914,9 +2937,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        1030,
-                                        140,
-                                        40,
+                                        1105.0,
+                                        173.0,
+                                        40.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -2935,9 +2958,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        960,
-                                        400,
-                                        120,
+                                        960.0,
+                                        549.0,
+                                        120.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -3547,9 +3570,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        960,
-                                        560,
-                                        300,
+                                        960.0,
+                                        709.0,
+                                        300.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
@@ -3830,9 +3853,9 @@
                                         ""
                                     ],
                                     "patching_rect": [
-                                        290,
-                                        70,
-                                        190.0,
+                                        20.0,
+                                        71.0,
+                                        201.0,
                                         22.0
                                     ],
                                     "fontname": "Arial",
