@@ -25,6 +25,8 @@ These files were created with Max 9.
 [Max/MSP Abstraction](https://github.com/guaguanco127/br.delay.swarm/tree/main/MaxMSP%20Abstraction) To use as an abstraction within Max/MSP   
 
 
+**Max for Live note:** if Live's audio engine is off (no audio output device chosen, an orange bar at the bottom of Live), the device opens with its controls at 0 or their lowest value. Turn audio on and they jump to their default values by themselves.
+
 ## What's New in 1.4
 
 - **Frozen Max for Live device.** The device now carries its helper files inside it, so copying the .amxd alone is enough.
